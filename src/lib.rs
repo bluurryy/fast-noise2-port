@@ -1,15 +1,23 @@
 #![allow(clippy::excessive_precision)]
 
-pub mod cell_distance;
-pub mod cell_value;
+mod cell_distance;
+mod cell_value;
 mod math;
-pub mod open_simplex_2;
-pub mod open_simplex_2s;
-pub mod perlin;
-pub mod simplex;
-pub mod value;
+mod open_simplex_2;
+mod open_simplex_2s;
+mod perlin;
+mod simplex;
+mod value;
 
-pub use math::*;
+use math::*;
+
+pub use cell_distance::CellDistance;
+pub use cell_value::CellValue;
+pub use open_simplex_2::OpenSimplex2;
+pub use open_simplex_2s::OpenSimplex2s;
+pub use perlin::Perlin;
+pub use simplex::Simplex;
+pub use value::Value;
 
 mod primes {
     pub(super) const X: i32 = 501125321;
@@ -334,12 +342,12 @@ macro_rules! simple_enum {
 		}
 
 		impl core::str::FromStr for $name {
-			type Err = $crate::EnumFromStrError;
+			type Err = $crate::error::EnumFromStrError;
 
 			fn from_str(s: &str) -> Result<Self, Self::Err> {
 				Ok(match s {
 					$(stringify!($variant) => Self::$variant,)*
-					_ => return Err($crate::EnumFromStrError),
+					_ => return Err($crate::error::EnumFromStrError),
 				})
 			}
 		}
@@ -370,11 +378,13 @@ macro_rules! simple_enum {
 
 pub(crate) use simple_enum;
 
-#[derive(Debug, Clone, Copy)]
-pub struct EnumFromStrError;
+pub mod error {
+    #[derive(Debug, Clone, Copy)]
+    pub struct EnumFromStrError;
 
-impl core::fmt::Display for EnumFromStrError {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        f.write_str("can't convert string to enum")
+    impl core::fmt::Display for EnumFromStrError {
+        fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+            f.write_str("can't convert string to enum")
+        }
     }
 }
